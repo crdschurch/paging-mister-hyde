@@ -1,0 +1,201 @@
+collections_dir: collections
+
+collections:
+  articles:
+    output: true
+    permalink: /articles/:slug
+  topics:
+    output: true
+    permalink: /topics/:path
+  authors:
+    output: true
+    permalink: /:collection/:path
+  podcasts:
+    output: true
+    permalink: /:collection/:slug
+  episodes:
+    output: true
+    permalink: /podcasts/:podcast_slug/:slug
+  albums:
+    output: true
+    permalink: /:collection/:slug
+  songs:
+    output: true
+    permalink: /:collection/:slug
+  videos:
+    output: true
+    permalink: /:collection/:slug
+
+contentful:
+  content_types:
+    articles:
+      id: article
+      body: body
+      filename: "{{ published_at | date: '%Y-%m-%d' }}-{{ slug }}"
+      frontmatter:
+        entry_mappings:
+          title: title
+          image: image/url
+          author: author/full_name
+          topic: category/title
+          date: published_at
+          slug: slug
+          tags: tags
+        other:
+          layout: article
+          draft: false
+    authors:
+      id: author
+      body: summary
+      frontmatter:
+        entry_mappings:
+          name: full_name
+          image: image/url
+        other:
+          layout: author
+          draft: false
+    topics:
+      id: category
+      frontmatter:
+        entry_mappings:
+          title: title
+        other:
+          layout: topic
+          draft: false
+    podcasts:
+      id: podcast
+      body: description
+      frontmatter:
+        entry_mappings:
+          title: title
+          subtitle: subtitle
+          image: image/url
+          background: bg_image/url
+          authors: author/full_name
+          apple_podcasts_url: apple_podcasts_url
+          google_play_url: google_play_url
+          stitcher_url: stitcher_url
+          slug: slug
+        other:
+          layout: podcast
+          draft: false
+    episodes:
+      id: episode
+      body: description
+      filename: "{{ episode_number }}-{{ slug }}"
+      frontmatter:
+        entry_mappings:
+          title: title
+          episode_number: episode_number
+          season_number: season_number
+          date: published_at
+          podcast: podcast/title
+          podcast_slug: podcast/slug
+          image: podcast/image/url
+          slug: slug
+          topic: category/title
+          tags: tags
+          show_notes: show_notes
+          transcription: transcription
+          audio_duration: audio_duration
+          audio_embed_code: audio_embed_code
+        other:
+          layout: episode
+          draft: false
+    albums:
+      id: album
+      body: description
+      frontmatter:
+        entry_mappings:
+          title: title
+          date: published_at
+          authors: author/full_name
+          image: image/url
+          bg_image: bg_image/url
+          author: author/full_name
+          spotify_url: spotify_url
+          apple_music_url: apple_music_url
+          google_play_url: google_play_url
+          slug: slug
+        other:
+          layout: album
+          draft: false
+    songs:
+      id: song
+      body: description
+      frontmatter:
+        entry_mappings:
+          title: title
+          details: details
+          lyrics: lyrics
+          chords: chords
+          stems: stems
+          topic: category/title
+          topic_slug: category/slug
+          tags: tags
+          author: author/full_name
+          audio_duration: audio_duration
+          album_title: album/title
+          album_image: album/image/url
+          album_slug: album/slug
+          date: published_at
+          image: image/url
+          bg_image: bg_image/url
+          spotify_url: spotify_url
+          apple_music_url: apple_music_url
+          google_play_url: google_play_url
+          youtube_url: youtube_url
+          related_videos: related_videos
+          slug: slug
+        other:
+          layout: song
+          draft: false
+    videos:
+      id: video
+      body: description
+      frontmatter:
+        entry_mappings:
+          title: title
+          subtitle: subtitle
+          topic: category/title
+          topic_slug: category/slug
+          authors: author/full_name
+          date: published_at
+          image: image/url
+          source_url: source_url
+          slug: slug
+          tags: tags
+        other:
+          layout: video
+          draft: false
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      js_manifest: application_deferred
+  - scope:
+      path: "/articles"
+      type: articles
+    values:
+      layout: article
+  - scope:
+      path: "/topics"
+      type: topics
+    values:
+      layout: topic
+  - scope:
+      path: "/authors"
+      type: authors
+    values:
+      layout: author
+  - scope:
+      path: "/podcasts"
+      type: podcasts
+    values:
+      layout: podcast
+  - scope:
+      path: "/episodes"
+      type: episodes
+    values:
+      layout: episode
