@@ -69,7 +69,8 @@ module PagingMisterHyde
       def paginated_collection(type)
         collection = filtered_and_sorted_collection(type)
         return [[]] if collection.blank?
-        per = @cfg.dig(type, 'per') || @site.collections[type].docs.length
+        collection_size = collection.is_a?(Array) ? collection.size : collection.try(:docs).try(:size)
+        per = @cfg.dig(type, 'per') || collection_size
         limit = @cfg.dig(type, 'limit')
         offset = @cfg.dig(type, 'offset') || 0
         pages = collection.drop(offset).each_slice(per).to_a
@@ -77,7 +78,11 @@ module PagingMisterHyde
       end
 
       def filtered_and_sorted_collection(type)
-        collection = @site.collections[type].docs
+        collection = if @page.data['paginate'][type]['collections']
+          merge_collections(@page.data['paginate'][type]['collections'])
+        else
+          @site.collections[type].docs
+        end
         collection = filter_collection(type, collection)
         sort_collection(type, collection)
       end
@@ -100,6 +105,12 @@ module PagingMisterHyde
           end
         end
         collection
+      end
+
+      def merge_collections(types)
+        collections = []
+        types.each { |t| collections.concat(site.collections[t].docs) }
+        collections
       end
 
       def previous_page_number(n)
