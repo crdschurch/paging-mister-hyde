@@ -72,7 +72,6 @@ describe PagingMisterHyde::Paginator do
     end
 
     it 'returns an empty array for pages' do
-      # binding.pry
       expect(@page.data.dig('songs', 'docs')).to eq([])
     end
   end
@@ -133,7 +132,6 @@ describe PagingMisterHyde::Paginator do
   context 'Podcasts' do
 
     it 'should sort podcasts by title' do
-      pending
       @filename = 'podcasts.html'
       @page = Jekyll::Page.new(@site, @base, '', @filename)
       @paginator = PagingMisterHyde::Paginator.new(@site, @page)
@@ -141,6 +139,17 @@ describe PagingMisterHyde::Paginator do
       titles = data.collect { |d| d.data['title'] }
       exp_titles = @site.collections['podcasts'].sort_by { |d| d.data['title'] }.collect { |d| d.data['title'] }
       expect(titles).to eq(exp_titles)
+    end
+  end
+
+  context 'Combined collections' do
+    it 'should combine collections' do
+      @filename = 'combined.html'
+      @page = Jekyll::Page.new(@site, @base, '', @filename)
+      @paginator = PagingMisterHyde::Paginator.new(@site, @page)
+      collected_collections = @page.data['combined_items']['docs'].collect { |d| d.collection }
+      expect(collected_collections.size).to eq(8)
+      expect(collected_collections.uniq.size).to eq(2)
     end
   end
 

@@ -8,6 +8,7 @@ background: "//images.ctfassets.net/p9oq1ve41d7r/5G62zla1zOsmKqSo8wmomI/d46b0ec8
 authors:
 - Bill Murray
 slug: another-podcast
+date: 2018-05-18T00:00-04:00
 ---
 
 <h1 id="header">header</h1>
