@@ -92,8 +92,11 @@ module PagingMisterHyde
       def sort_collection(type, collection)
         if @cfg.dig(type, 'sort')
           sort_by, sort_in = @cfg.dig(type, 'sort') ? @cfg.dig(type, 'sort').split(' ') : nil
-          collection = collection.sort_by { |d| d.data[sort_by] } if sort_by
-          collection = collection.reverse if sort_in == 'desc'
+          if sort_by
+            collection.select! { |d| d.data[sort_by] }
+            collection.sort_by! { |d| d.data[sort_by] }
+          end
+          collection.reverse! if sort_in == 'desc'
         end
         collection
       end
