@@ -94,19 +94,58 @@ module PagingMisterHyde
           sort_by, sort_in = @cfg.dig(type, 'sort') ? @cfg.dig(type, 'sort').split(' ') : nil
           if sort_by
             collection.select! { |d| d.data[sort_by] }
-            collection.sort_by! { |d| d.data[sort_by] }
+            collection.sort_by! { |d| [d.data[sort_by], d.data['title']] }
           end
           collection.reverse! if sort_in == 'desc'
         end
         collection
       end
 
+      # Filters docs out of a collection following config:
+      #
+      #   where: attr: value
+      #
+      # The attr uses periods to chain together nested attributes. For example,
+      # with the config:
+      #
+      #   tags: 'some title'
+      #
+      # `tags` is expected to return a string or an array, but with this config:
+      #
+      #   tags.title: 'some title'
+      #
+      # `tags` is expected to be an object (Hash) or an array of objects.
+      #
+      # And if the value starts with a colon it is believed to be a data
+      # attribute on the current page. Otherwise it is taken literally. For
+      # example, to use the title of the current page as the matching value, do
+      # this:
+      #
+      #   tags.title: :title
+      #
       def filter_collection(type, collection)
+        # Ignore filtering if `where` is not in frontmatter.
         return collection unless cfg.dig(type, 'where')
         cfg.dig(type, 'where').each do |attr, value|
+          # Resolve attribute if it is referencing object(s).
+          attr = (attr.split('.').size > 1) ? attr.split('.') : attr
+          # Resolve value if it is meant to be dynamic.
           value = page.data[value[1..-1]] if value.start_with?(':')
-          collection = collection.select do |obj|
-            obj.data[attr].is_a?(Array) ? obj.data[attr].include?(value) : obj.data[attr] == value
+          # Filter the collection.
+          collection.select! do |obj|
+            # If the attribute is referencing a string we know the value is
+            # either a string or an array. If it is a string, match exactly, but
+            # if it is an array, look for inclusion.
+            if attr.is_a?(String)
+              v = obj.data[attr]
+              v.is_a?(Array) ? v.include?(value) : v == value
+            # If the attribute is an object or array of objects, dig into the
+            # object(s) to find the appropriate value to match or be included,
+            # as specified above.
+            else
+              v = obj.data[attr.first]
+              v.is_a?(Array) ? v.collect{|x| x.dig(*attr[1..-1])}.include?(value) : v.dig(*attr[1..-1]) == value
+            end
           end
         end
         collection
