@@ -92,11 +92,9 @@ module PagingMisterHyde
       def sort_collection(type, collection)
         if @cfg.dig(type, 'sort')
           sort_by, sort_in = @cfg.dig(type, 'sort') ? @cfg.dig(type, 'sort').split(' ') : nil
-          if sort_by
-            collection.select! { |d| d.data[sort_by] }
-            collection.sort_by! { |d| [d.data[sort_by], d.data['title']] }
-          end
-          collection.reverse! if sort_in == 'desc'
+          collection = collection.select { |d| d.data[sort_by] } if sort_by
+          collection = collection.sort_by { |d| [d.data[sort_by], d.data['title']] } if sort_by
+          collection = collection.reverse if sort_in == 'desc'
         end
         collection
       end
@@ -132,7 +130,7 @@ module PagingMisterHyde
           # Resolve value if it is meant to be dynamic.
           value = page.data[value[1..-1]] if value.start_with?(':')
           # Filter the collection.
-          collection.select! do |obj|
+          collection = collection.select do |obj|
             # If the attribute is referencing a string we know the value is
             # either a string or an array. If it is a string, match exactly, but
             # if it is an array, look for inclusion.
