@@ -128,6 +128,19 @@ paginate:
 
 In this case, only those articles containing at least one tag matching the title of the page rendering the collection would be returned.
 
+If the attribute to filter is an object (Hash) or an array of objects, use a period to chain together attributes, enabling the paginator to dig into the objects and match the correct value. Using the example above, suppose `tags` was an array of objects each containing a `title` key. To extract the correct value, the config would look like this:
+
+```liquid
+---
+...
+paginate:
+  articles:
+    per: 8
+    where:
+      tags.title: :title
+---
+```
+
 ### Sorting Collections
 
 The paginator takes the collection as presented by Jekyll, but that can be overridden using the `sort`. The `sort` option takes two arguments, separated by a space. The first argument is the method by which to sort and the second is the sorting direction (`asc`/`desc`). The direction is optional and is `asc` by default.
