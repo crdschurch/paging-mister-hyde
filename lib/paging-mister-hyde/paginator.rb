@@ -101,7 +101,8 @@ module PagingMisterHyde
 
       # Filters docs out of a collection following config:
       #
-      #   where: attr: value
+      #   where:
+      #     attr: value
       #
       # The attr uses periods to chain together nested attributes. For example,
       # with the config:
